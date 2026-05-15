@@ -956,6 +956,7 @@ async function guardarHistorial() {
     await DB.savePlan(plan);
     if (typeof App !== 'undefined' && App.toast) App.toast('Plan guardado en historial', 'success');
     if (typeof Config !== 'undefined' && Config.updateStatus) Config.updateStatus();
+    if (typeof Config !== 'undefined' && Config.updateDashStats) Config.updateDashStats();
   } catch (e) {
     console.error(e);
     if (typeof App !== 'undefined' && App.toast) App.toast('Error al guardar', 'error');

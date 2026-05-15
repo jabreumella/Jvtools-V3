@@ -87,8 +87,27 @@ const Config = (() => {
 
   function updateGreeting() {
     const cfg = load();
+    // ── Nuevo diseño del menú (dash-card) ──
+    const dashName = document.getElementById('dash-name');
+    const greetLine = document.querySelector('.dash-greet-line');
+    if (dashName) {
+      const hora = new Date().getHours();
+      const saludo = hora < 12 ? 'Buenos días' : (hora < 19 ? 'Buenas tardes' : 'Buenas noches');
+      if (greetLine) greetLine.textContent = saludo + ',';
+      const nombre = cfg.asesorNombre ? cfg.asesorNombre.split(' ')[0] : 'Asesor';
+      dashName.textContent = nombre;
+    }
+
+    // ── Footer con nombres del equipo ──
+    const line = document.getElementById('menu-asesor-line');
+    if (line && cfg.asesorNombre) {
+      line.textContent = cfg.partner
+        ? `${cfg.asesorNombre} & ${cfg.partner}`
+        : cfg.asesorNombre;
+    }
+
+    // ── Compat con el saludo viejo si todavía existe ──
     const greet = document.getElementById('menu-greet');
-    const line  = document.getElementById('menu-asesor-line');
     if (greet) {
       const hora = new Date().getHours();
       const saludo = hora < 12 ? 'Buenos días' : (hora < 19 ? 'Buenas tardes' : 'Buenas noches');
@@ -97,11 +116,34 @@ const Config = (() => {
         ? `${saludo}, <strong>${escapeHTML(nombre)}</strong>. <small>${escapeHTML(cfg.empresa || '')}</small>`
         : 'Bienvenido. Selecciona la herramienta que deseas utilizar.';
     }
-    if (line && cfg.asesorNombre) {
-      line.textContent = cfg.partner
-        ? `${cfg.asesorNombre} & ${cfg.partner}`
-        : cfg.asesorNombre;
+
+    // ── Actualizar contadores del dashboard ──
+    updateDashStats();
+  }
+
+  async function updateDashStats() {
+    const tEl = document.getElementById('dash-total');
+    const mEl = document.getElementById('dash-mes');
+    const vEl = document.getElementById('dash-vol');
+    if (!tEl && !mEl && !vEl) return;
+    try {
+      const s = await DB.getStats();
+      if (tEl) tEl.textContent = s.total;
+      if (mEl) mEl.textContent = s.mes;
+      if (vEl) vEl.textContent = formatCompactUSD(s.volumenUSD);
+    } catch (e) {
+      if (tEl) tEl.textContent = '0';
+      if (mEl) mEl.textContent = '0';
+      if (vEl) vEl.textContent = '$0';
     }
+  }
+
+  function formatCompactUSD(v) {
+    v = Number(v) || 0;
+    if (v === 0)         return '$0';
+    if (v < 1000)        return '$' + Math.round(v);
+    if (v < 1_000_000)   return '$' + (v / 1000).toFixed(v < 10000 ? 1 : 0) + 'K';
+    return '$' + (v / 1_000_000).toFixed(v < 10_000_000 ? 1 : 0) + 'M';
   }
 
   async function updateStatus() {
@@ -217,7 +259,7 @@ const Config = (() => {
 
   return {
     init, load, get, set, save,
-    populateForm, updateStatus, updateGreeting,
+    populateForm, updateStatus, updateGreeting, updateDashStats,
     backup, restoreClick, restoreFile, borrarTodo
   };
 })();

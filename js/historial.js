@@ -153,6 +153,7 @@ const Historial = (() => {
           App.toast('Plan eliminado', 'success');
           render();
           Config.updateStatus();
+          if (Config.updateDashStats) Config.updateDashStats();
         } catch (e) {
           App.toast('Error al eliminar', 'error');
         }

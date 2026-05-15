@@ -90,6 +90,27 @@ const DB = (() => {
     return promisify(store.count());
   }
 
+  // ── Stats agregadas para el dashboard del menú ──────────────────────
+  // Retorna { total, mes, volumenUSD } a partir de los planes guardados
+  async function getStats() {
+    try {
+      const all = await getAllPlans();
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      let mes = 0, vol = 0;
+      all.forEach(p => {
+        const d = new Date(p.createdAt || 0);
+        if (d.getFullYear() === y && d.getMonth() === m) mes++;
+        const precio = parseFloat(String(p.precioUSD || '0').replace(/,/g, '')) || 0;
+        vol += precio;
+      });
+      return { total: all.length, mes, volumenUSD: vol };
+    } catch (e) {
+      return { total: 0, mes: 0, volumenUSD: 0 };
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════════
   //  KPIs API (placeholder for future module)
   // ══════════════════════════════════════════════════════════════════
@@ -160,7 +181,7 @@ const DB = (() => {
   return {
     open,
     // plans
-    savePlan, getPlan, getAllPlans, deletePlan, clearPlans, countPlans,
+    savePlan, getPlan, getAllPlans, deletePlan, clearPlans, countPlans, getStats,
     // kpis
     saveKpi, getKpi, getAllKpis, clearKpis,
     // backup
