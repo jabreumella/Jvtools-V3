@@ -36,16 +36,17 @@
 <body>
 
 <!-- ════════════════════════════════════════════════════════════════════
-     SPLASH
+     SPLASH  (estilo Inicio1: casa celeste sobre navy)
      ════════════════════════════════════════════════════════════════════ -->
 <div id="splash">
   <div class="splash-logo">
-    <img src="icons/icon-192.png" alt="J&V Tools">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V10.5z" fill="#fff"/>
+    </svg>
   </div>
   <div class="splash-title">J<span>&amp;</span>V</div>
   <div class="splash-sub">Asesores Inmobiliarios</div>
   <div class="splash-line"></div>
-  <div class="splash-tagline">MR. Home · República Dominicana</div>
   <div class="splash-version">v1.0.0</div>
 </div>
 
@@ -67,16 +68,22 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       SCREEN: MENU
+       SCREEN: MENU  (estilo Disen_o1)
        ═══════════════════════════════════════════════════════════════ -->
   <div id="screen-menu" class="screen">
-    <div class="menu-header">
-      <div class="menu-logo"><img src="icons/icon-192.png" alt="J&V Tools"></div>
-      <div class="menu-title">J<span>&amp;</span>V&nbsp;Tools</div>
-      <div class="menu-subtitle">Asesores Inmobiliarios</div>
+
+    <!-- Header con logo casa + título -->
+    <div class="menu-header-v2">
+      <div class="menu-logo-v2">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V10.5z" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="menu-title-v2">J<span>&amp;</span>V&nbsp;Tools</div>
+      <div class="menu-subtitle-v2">MR. HOME ASESORES</div>
     </div>
 
-    <!-- Install banner (shown when beforeinstallprompt fires) -->
+    <!-- Install banner (cuando beforeinstallprompt dispara) -->
     <div id="install-banner" class="install-banner">
       <div class="ib-icon">📲</div>
       <div class="ib-text">
@@ -87,83 +94,119 @@
       <button class="ib-close" id="btn-install-close" aria-label="Cerrar">×</button>
     </div>
 
-    <div class="menu-greet" id="menu-greet">
-      Bienvenido. Selecciona la herramienta que deseas utilizar.
+    <!-- Card oscura con saludo + 3 contadores -->
+    <div class="dash-card">
+      <div class="dash-greet">
+        <div class="dash-greet-line">Buenas noches,</div>
+        <div class="dash-greet-name" id="dash-name">Asesor</div>
+      </div>
+      <div class="dash-divider"></div>
+      <div class="dash-stats">
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="dash-total">0</div>
+          <div class="dash-stat-lbl">Cotizaciones</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="dash-mes">0</div>
+          <div class="dash-stat-lbl">Este mes</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="dash-vol">$0</div>
+          <div class="dash-stat-lbl">Volumen</div>
+        </div>
+      </div>
     </div>
 
-    <div class="menu-grid">
+    <!-- Sección: Cotización & Cálculos -->
+    <div class="menu-section-title">📊 COTIZACIÓN &amp; CÁLCULOS</div>
+    <div class="menu-grid-v2">
 
-      <button class="menu-card" onclick="App.showScreen('plan')">
-        <div class="menu-card-icon mc-blue">
-          <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      <button class="tool-card" onclick="App.showScreen('plan')">
+        <div class="tool-icon tc-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Plan de Pago</div>
-          <div class="menu-card-desc">Genera cronograma completo de pagos para clientes</div>
-        </div>
-        <div class="menu-card-arrow">›</div>
+        <div class="tool-name">Plan de Pago</div>
+        <div class="tool-desc">Cronograma completo de cuotas</div>
       </button>
 
-      <button class="menu-card" onclick="App.showScreen('historial')">
-        <div class="menu-card-icon mc-celeste">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <button class="tool-card disabled" title="Próximamente">
+        <div class="tool-icon tc-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Historial</div>
-          <div class="menu-card-desc">Cotizaciones guardadas para volver a abrirlas</div>
-        </div>
-        <div class="menu-card-arrow">›</div>
+        <span class="tool-badge">PRONTO</span>
+        <div class="tool-name">Capacidad de Pago</div>
+        <div class="tool-desc">Evaluación financiera del cliente</div>
       </button>
 
-      <button class="menu-card disabled" title="Próximamente">
-        <div class="menu-card-icon mc-gold">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <button class="tool-card disabled" title="Próximamente">
+        <div class="tool-icon tc-orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Capacidad de Pago</div>
-          <div class="menu-card-desc">Evalúa la capacidad financiera del cliente</div>
-        </div>
-        <div class="menu-card-badge">PRONTO</div>
+        <span class="tool-badge">PRONTO</span>
+        <div class="tool-name">Préstamo</div>
+        <div class="tool-desc">Cuota hipotecaria por banco</div>
       </button>
 
-      <button class="menu-card disabled" title="Próximamente">
-        <div class="menu-card-icon mc-green">
-          <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h2M11 15h2"/></svg>
+      <button class="tool-card disabled" title="Próximamente">
+        <div class="tool-icon tc-gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Calculadora de Préstamo</div>
-          <div class="menu-card-desc">Cuota mensual de hipoteca según monto y plazo</div>
-        </div>
-        <div class="menu-card-badge">PRONTO</div>
+        <span class="tool-badge tb-new">NUEVO</span>
+        <div class="tool-name">Comisión J&amp;V</div>
+        <div class="tool-desc">Split del equipo + impuestos</div>
       </button>
 
-      <button class="menu-card disabled" title="Próximamente">
-        <div class="menu-card-icon mc-purple">
-          <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    </div>
+
+    <!-- Sección: Análisis & Comparación -->
+    <div class="menu-section-title">🏠 ANÁLISIS &amp; COMPARACIÓN</div>
+    <div class="menu-grid-v2">
+
+      <button class="tool-card disabled" title="Próximamente">
+        <div class="tool-icon tc-purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Comisión J&V</div>
-          <div class="menu-card-desc">Cálculo de comisión con ITBIS / ISR</div>
-        </div>
-        <div class="menu-card-badge">PRONTO</div>
+        <span class="tool-badge">PRONTO</span>
+        <div class="tool-name">Comparador</div>
+        <div class="tool-desc">Compara hasta 3 unidades</div>
       </button>
 
-      <button class="menu-card" onclick="App.showScreen('config')">
-        <div class="menu-card-icon mc-navy">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <button class="tool-card disabled" title="Próximamente">
+        <div class="tool-icon tc-rose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
         </div>
-        <div class="menu-card-content">
-          <div class="menu-card-title">Configuración</div>
-          <div class="menu-card-desc">Datos del asesor, respaldos y privacidad</div>
+        <span class="tool-badge">PRONTO</span>
+        <div class="tool-name">Inversión</div>
+        <div class="tool-desc">TIR · VAN · Plusvalía</div>
+      </button>
+
+    </div>
+
+    <!-- Sección: Gestión -->
+    <div class="menu-section-title">🛠 GESTIÓN</div>
+    <div class="menu-grid-v2">
+
+      <button class="tool-card" onclick="App.showScreen('historial')">
+        <div class="tool-icon tc-celeste">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
-        <div class="menu-card-arrow">›</div>
+        <div class="tool-name">Historial</div>
+        <div class="tool-desc">Cotizaciones guardadas</div>
+      </button>
+
+      <button class="tool-card" onclick="App.showScreen('config')">
+        <div class="tool-icon tc-navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.9 2.9l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.9-2.9l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1A2 2 0 117.1 4.6l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.9 2.9l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+        </div>
+        <div class="tool-name">Configuración</div>
+        <div class="tool-desc">Datos del asesor &amp; respaldos</div>
       </button>
 
     </div>
 
     <div class="menu-footer">
-      MR. Home · <span id="menu-asesor-line">Juan José &amp; Víctor Andújar</span><br>
-      República Dominicana · v1.0.0
+      <span id="menu-asesor-line">Juan José &amp; Víctor Andújar</span><br>
+      MR. Home · República Dominicana · v1.0.0
     </div>
   </div>
 

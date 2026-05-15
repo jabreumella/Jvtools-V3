@@ -7,7 +7,7 @@
  *  Al activar: limpia caches viejos y notifica al cliente si hay update.
  * ──────────────────────────────────────────────────────────────────────── */
 
-const CACHE_VERSION = 'jvtools-v1.0.0';
+const CACHE_VERSION = 'jvtools-v1.0.1';
 const CACHE_STATIC  = `${CACHE_VERSION}-static`;
 const CACHE_RUNTIME = `${CACHE_VERSION}-runtime`;
 
