@@ -737,28 +737,24 @@ hr.dash { border: none; border-top: 1.5px dashed var(--borde); margin: 14px 0; }
  *  RESPONSIVE  +  PRINT
  *  ═════════════════════════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-  /* Plan de Pago compacto en móvil: mantener 2 columnas */
-  .g2          { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .pct-grid    { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .sum-grid    { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .hom-row     { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .banco-wrap  { flex-wrap: wrap; }
-  .banco-box   { flex: 1 1 calc(50% - 6px); min-width: 0; }
-  #plan-header { grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; }
+  /* Plan de Pago en móvil: TODO en 1 columna para mejor legibilidad */
+  .g2, .hom-row { grid-template-columns: 1fr; gap: 10px; }
+  /* Las grids de 4 cajas pequeñas SÍ van en 2x2 (KPIs, esquema pago) */
+  .pct-grid     { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .sum-grid     { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  /* Banco también vertical: 4 cajas apiladas en móvil es más limpio */
+  .banco-wrap   { flex-direction: column; }
+  #plan-header  { grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; }
 
-  /* Densidad de campos más alta */
-  .container   { padding: 12px; }
-  .card        { padding: 14px 12px; }
-  .card-title  { font-size: 10.5px; padding-bottom: 7px; margin-bottom: 12px; }
-  .field       { margin-bottom: 9px; }
-  .field label { font-size: 10px; }
+  /* Densidad cómoda: campos más grandes y legibles */
+  .container   { padding: 14px; }
+  .card        { padding: 16px 14px; }
+  .card-title  { font-size: 11px; padding-bottom: 8px; margin-bottom: 13px; }
+  .field       { margin-bottom: 11px; }
+  .field label { font-size: 11px; }
   .field input, .field select {
-    padding: 8px 9px; font-size: 13px;
+    padding: 11px 12px; font-size: 14px;
   }
-  .pw input    { padding-left: 22px; }
-  .pw .pfx     { font-size: 12px; left: 8px; }
-
-  /* Cards menú no necesitan colapsar: ya están en grid 2x2 */
 }
 
 @media (max-width: 380px) {
@@ -769,7 +765,6 @@ hr.dash { border: none; border-top: 1.5px dashed var(--borde); margin: 14px 0; }
   .tool-desc { font-size: 11px; }
   .dash-greet-name { font-size: 19px; }
   .dash-stat-val { font-size: 17px; }
-  .field input, .field select { font-size: 12.5px; padding: 7px 8px; }
 }
 
 @media print {
