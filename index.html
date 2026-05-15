@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+
+  <!-- PWA core -->
+  <meta name="theme-color" content="#1C355E">
+  <meta name="description" content="Suite de herramientas para asesores inmobiliarios: planes de pago, capacidad, préstamos e historial de cotizaciones.">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="J&V Tools">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- Icons / favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <title>J&V Tools — MR. Home</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+  <!-- App stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- jsPDF for plan export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SPLASH
+     ════════════════════════════════════════════════════════════════════ -->
+<div id="splash">
+  <div class="splash-logo">
+    <img src="icons/icon-192.png" alt="J&V Tools">
+  </div>
+  <div class="splash-title">J<span>&amp;</span>V</div>
+  <div class="splash-sub">Asesores Inmobiliarios</div>
+  <div class="splash-line"></div>
+  <div class="splash-tagline">MR. Home · República Dominicana</div>
+  <div class="splash-version">v1.0.0</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     APP
+     ════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- ─── TOAST CONTAINER ──────────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ─── MODAL OVERLAY ────────────────────────────────────────────── -->
+  <div id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header"><div class="modal-title" id="modal-title">—</div></div>
+      <div class="modal-body" id="modal-body">—</div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SCREEN: MENU
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="screen-menu" class="screen">
+    <div class="menu-header">
+      <div class="menu-logo"><img src="icons/icon-192.png" alt="J&V Tools"></div>
+      <div class="menu-title">J<span>&amp;</span>V&nbsp;Tools</div>
+      <div class="menu-subtitle">Asesores Inmobiliarios</div>
+    </div>
+
+    <!-- Install banner (shown when beforeinstallprompt fires) -->
+    <div id="install-banner" class="install-banner">
+      <div class="ib-icon">📲</div>
+      <div class="ib-text">
+        <strong>Instala J&V Tools</strong>
+        Úsala como app nativa con acceso offline.
+      </div>
+      <button id="btn-install">Instalar</button>
+      <button class="ib-close" id="btn-install-close" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="menu-greet" id="menu-greet">
+      Bienvenido. Selecciona la herramienta que deseas utilizar.
+    </div>
+
+    <div class="menu-grid">
+
+      <button class="menu-card" onclick="App.showScreen('plan')">
+        <div class="menu-card-icon mc-blue">
+          <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Plan de Pago</div>
+          <div class="menu-card-desc">Genera cronograma completo de pagos para clientes</div>
+        </div>
+        <div class="menu-card-arrow">›</div>
+      </button>
+
+      <button class="menu-card" onclick="App.showScreen('historial')">
+        <div class="menu-card-icon mc-celeste">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Historial</div>
+          <div class="menu-card-desc">Cotizaciones guardadas para volver a abrirlas</div>
+        </div>
+        <div class="menu-card-arrow">›</div>
+      </button>
+
+      <button class="menu-card disabled" title="Próximamente">
+        <div class="menu-card-icon mc-gold">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Capacidad de Pago</div>
+          <div class="menu-card-desc">Evalúa la capacidad financiera del cliente</div>
+        </div>
+        <div class="menu-card-badge">PRONTO</div>
+      </button>
+
+      <button class="menu-card disabled" title="Próximamente">
+        <div class="menu-card-icon mc-green">
+          <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h2M11 15h2"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Calculadora de Préstamo</div>
+          <div class="menu-card-desc">Cuota mensual de hipoteca según monto y plazo</div>
+        </div>
+        <div class="menu-card-badge">PRONTO</div>
+      </button>
+
+      <button class="menu-card disabled" title="Próximamente">
+        <div class="menu-card-icon mc-purple">
+          <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Comisión J&V</div>
+          <div class="menu-card-desc">Cálculo de comisión con ITBIS / ISR</div>
+        </div>
+        <div class="menu-card-badge">PRONTO</div>
+      </button>
+
+      <button class="menu-card" onclick="App.showScreen('config')">
+        <div class="menu-card-icon mc-navy">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+        <div class="menu-card-content">
+          <div class="menu-card-title">Configuración</div>
+          <div class="menu-card-desc">Datos del asesor, respaldos y privacidad</div>
+        </div>
+        <div class="menu-card-arrow">›</div>
+      </button>
+
+    </div>
+
+    <div class="menu-footer">
+      MR. Home · <span id="menu-asesor-line">Juan José &amp; Víctor Andújar</span><br>
+      República Dominicana · v1.0.0
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SCREEN: PLAN DE PAGOS
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="screen-plan" class="screen">
+    <div class="back-bar">
+      <button class="back-btn" onclick="App.showScreen('menu')">‹ Menú</button>
+      <h2>Plan de Pago</h2>
+      <div class="right-actions">
+        <button title="Nuevo Plan" onclick="Plan.nuevo()" aria-label="Nuevo plan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div id="alert-pct" style="display:none;padding:10px 14px;border-radius:7px;font-size:13px;margin-bottom:14px;background:#fef9c3;border:1px solid #fde047;color:#854d0e;align-items:center;gap:8px">
+        ⚠️ Los porcentajes del esquema de pago no suman 100%. Revise los valores.
+      </div>
+
+      <!-- CLIENTE + PROPIEDAD -->
+      <div class="g2">
+
+        <div class="card">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Datos del Cliente
+          </div>
+          <div class="g2">
+            <div class="field"><label>Nombre del Cliente</label>
+              <input type="text" id="cliente" placeholder="Ej. Juan Pérez" oninput="Plan.recalcular()">
+            </div>
+            <div class="field"><label>Nacionalidad</label>
+              <select id="nacionalidad" onchange="Plan.recalcular()">
+                <option>Dominicano</option><option>Estadounidense</option><option>Canadiense</option>
+                <option>Europeo</option><option>Latinoamericano</option><option>Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Flujo Mensual (USD$)</label>
+              <div class="pw"><span class="pfx">$</span>
+                <input type="text" id="flujoMensual" placeholder="0"
+                  onfocus="Plan.cleanNum(this)" onblur="Plan.fmtNum(this)">
+              </div>
+            </div>
+            <div class="field"><label>Dinero en Mano (USD$)</label>
+              <div class="pw"><span class="pfx">$</span>
+                <input type="text" id="dineroMano" placeholder="0"
+                  onfocus="Plan.cleanNum(this)" onblur="Plan.fmtNum(this)">
+              </div>
+            </div>
+          </div>
+          <div class="field"><label>Inmueble Propio Estimado (USD$)</label>
+            <div class="pw"><span class="pfx">$</span>
+              <input type="number" id="inmueble" placeholder="0" oninput="Plan.recalcular()">
+            </div>
+          </div>
+          <div class="cap-wrap" id="cap-wrap"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+            Datos de la Propiedad
+          </div>
+          <div class="g2">
+            <div class="field"><label>Proyecto</label>
+              <input type="text" id="proyecto" placeholder="Ej. Terra Living" oninput="Plan.recalcular()">
+            </div>
+            <div class="field"><label>Unidad</label>
+              <input type="text" id="unidad" placeholder="Ej. F3 · 2 Hab." oninput="Plan.recalcular()">
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Precio de Cierre (USD$)</label>
+              <div class="pw"><span class="pfx">$</span>
+                <input type="text" id="precioUSD" placeholder="0"
+                  onfocus="Plan.cleanNum(this)" onblur="Plan.fmtNum(this)">
+              </div>
+            </div>
+            <div class="field">
+              <label style="display:flex;align-items:center;gap:6px">
+                Tasa de Cambio (RD$/USD)
+                <span id="tasa-badge" class="tasa-badge no-print" onclick="Plan.fetchTasaCambio()">🔄 Actualizar</span>
+              </label>
+              <div class="sw">
+                <input type="number" id="tasaCambio" value="60.75" step="0.25" oninput="Plan.recalcular()">
+                <span class="sfx">RD$</span>
+              </div>
+              <div id="tasa-fuente" style="font-size:10px;color:#94a3b8;margin-top:3px"></div>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field">
+              <label>Fecha de Reserva</label>
+              <input type="date" id="fechaInicio" oninput="Plan.recalcular()">
+            </div>
+            <div class="field">
+              <label>Fecha Firma Contrato <span style="font-weight:400;font-size:10px;text-transform:none;color:#94a3b8">(editable)</span></label>
+              <input type="date" id="fechaFirma" oninput="Plan.recalcularCuotas()">
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Fecha Estimada de Entrega</label>
+              <input type="date" id="fechaEntrega" oninput="Plan.recalcularCuotas()">
+            </div>
+            <div class="field"><label>Descripción / Notas</label>
+              <input type="text" id="notas" placeholder="Ej. 2 Hab., amueblado, vista al mar...">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ESQUEMA DE PAGO -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+          Esquema de Pago
+          <span style="font-weight:400;font-size:11px;color:#94a3b8;margin-left:auto">Presets:</span>
+          <button class="preset-btn" onclick="Plan.aplicarPreset(10,20,this)">10-20-70</button>
+          <button class="preset-btn" onclick="Plan.aplicarPreset(10,25,this)">10-25-65</button>
+          <button class="preset-btn" onclick="Plan.aplicarPreset(10,30,this)">10-30-60</button>
+          <button class="preset-btn" onclick="Plan.aplicarPreset(10,35,this)">10-35-55</button>
+          <button class="preset-btn" onclick="Plan.aplicarPreset(10,40,this)">10-40-50</button>
+        </div>
+
+        <div class="pct-grid">
+          <div class="pct-box gold">
+            <div class="pb-label">🔑 Reserva</div>
+            <div class="pw" style="margin:0 auto;max-width:150px">
+              <span class="pfx">$</span>
+              <input type="number" id="reservaFija" value="5000" step="500" oninput="Plan.onPctChange()"
+                style="width:100%;padding:4px 4px 4px 22px;font-size:20px;font-weight:800;color:var(--navy);border:none;border-bottom:1.5px dashed #cbd5e1;background:transparent;outline:none;text-align:center;">
+            </div>
+            <div class="pb-small-sub" id="lbl-res-pct">— % del precio</div>
+            <div class="pb-tiny">Monto fijo en USD$</div>
+          </div>
+
+          <div class="pct-box blue">
+            <div class="pb-label">📝 Separación</div>
+            <div class="pb-amount-big" id="lbl-sep-usd">USD$ —</div>
+            <div class="pb-pct-row">
+              <input type="number" id="pctInicial" value="10" step="0.5" min="0" max="99"
+                oninput="Plan.onPctChange()" class="pb-pct-input">
+              <span class="pb-pct-sym">%</span>
+            </div>
+            <div class="pb-tiny">% inicial total (incl. reserva)</div>
+          </div>
+
+          <div class="pct-box green">
+            <div class="pb-label">🏗️ Plan de Pago</div>
+            <div class="pb-amount-big" id="lbl-plan-usd">USD$ —</div>
+            <div class="pb-pct-row">
+              <input type="number" id="pctPlan" value="35" step="0.5" min="0" max="99"
+                oninput="Plan.onPctChange()" class="pb-pct-input">
+              <span class="pb-pct-sym">%</span>
+            </div>
+            <div class="pb-tiny">Durante construcción</div>
+          </div>
+
+          <div class="pct-box red">
+            <div class="pb-label">🏠 Contra Entrega</div>
+            <div class="pb-amount-big" id="lbl-entr-usd">USD$ —</div>
+            <div class="pb-pct-row">
+              <input type="number" id="pctEntrega" value="55" readonly class="pb-pct-input"
+                style="color:#94a3b8;cursor:default">
+              <span class="pb-pct-sym">%</span>
+            </div>
+            <div class="pb-tiny">Auto: 100 − Inicial − Plan</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px">
+          <span style="font-size:12px;color:#64748b">Total (Inicial% + Plan% + Entrega%):</span>
+          <span id="pct-total" class="pct-badge ok">100.00%</span>
+        </div>
+
+        <hr class="dash">
+
+        <div class="g2" style="margin-bottom:12px">
+          <div class="field">
+            <label>Método de Pago</label>
+            <div class="tog">
+              <button class="tog-btn active" id="btn-m" onclick="Plan.setMetodo('Mensual')">Mensual</button>
+              <button class="tog-btn" id="btn-t" onclick="Plan.setMetodo('Trimestral')">Trimestral</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Cuotas (auto desde fechas)</label>
+            <input type="number" id="cantCuotas" value="0" readonly
+              style="background:#f8fafc;color:#475569;cursor:default;font-weight:700">
+          </div>
+        </div>
+
+        <hr class="dash">
+
+        <div id="excedente-box" class="excedente-box neutro" style="display:none"></div>
+
+        <div class="extras-label" style="margin-bottom:12px">💎 Pagos Extraordinarios <span style="font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0">(reducen la cuota regular)</span></div>
+
+        <div class="hom-section">
+          <div class="hom-label">📋 Homogéneos — mismo monto en varias cuotas</div>
+          <div class="hom-row">
+            <div class="field">
+              <label>Monto Fijo por Cuota (USD$)</label>
+              <div style="position:relative">
+                <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;pointer-events:none">$</span>
+                <input type="text" id="extra-hom-monto" placeholder="0"
+                  oninput="Plan.cleanNum(this)" onchange="Plan.fmtNum(this)"
+                  style="padding-left:22px;width:100%;padding-top:7px;padding-bottom:7px;border:1.5px solid #bae6fd;border-radius:7px;font-size:13px;outline:none;background:#fff">
+              </div>
+            </div>
+            <div class="field">
+              <label>Aplicar en Cuotas N° (ej: 6, 12, 24)</label>
+              <input type="text" id="extra-hom-cuotas" placeholder="ej: 6, 12, 24"
+                oninput="Plan.recalcular()"
+                style="width:100%;padding:7px 10px;border:1.5px solid #bae6fd;border-radius:7px;font-size:13px;outline:none;background:#fff">
+            </div>
+          </div>
+          <div id="hom-summary"></div>
+        </div>
+
+        <div class="extras-header">
+          <span class="extras-sub-label">📌 No Homogéneos — monto distinto por cuota</span>
+          <button class="btn-add-extra no-print" onclick="Plan.agregarPagoExtra()">＋ Agregar pago</button>
+        </div>
+
+        <div id="lista-extras"></div>
+        <div id="extras-empty" style="font-size:12px;color:#94a3b8;padding:4px 0;display:block">
+          Sin pagos no homogéneos agregados.
+        </div>
+        <div id="extras-summary"></div>
+
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="sum-grid">
+        <div class="sum-card sc-dark">
+          <div class="sl">Inicial (Reserva + Sep.)</div>
+          <div class="sv" id="sv-ini">—</div>
+          <div class="ss" id="ss-ini">—</div>
+        </div>
+        <div class="sum-card sc-blue">
+          <div class="sl" id="lbl-cuota-tipo">Cuota Mensual</div>
+          <div class="sv" id="sv-cuota">—</div>
+          <div class="ss" id="ss-cuota">—</div>
+        </div>
+        <div class="sum-card sc-green">
+          <div class="sl">Total Durante Obra</div>
+          <div class="sv" id="sv-obra">—</div>
+          <div class="ss" id="ss-obra">—</div>
+        </div>
+        <div class="sum-card sc-gold">
+          <div class="sl">Saldo Contra Entrega</div>
+          <div class="sv" id="sv-entr">—</div>
+          <div class="ss" id="ss-entr">—</div>
+        </div>
+      </div>
+
+      <!-- BANCO -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          Cuota Estimada Banco (Financiamiento del Saldo Contra Entrega)
+        </div>
+        <div class="banco-wrap">
+          <div class="banco-box">
+            <div class="bl">Cuota Banco USD$</div>
+            <div class="bv" id="bv-usd">—</div>
+            <div class="bs" id="bs-info">Capital — · Tasa — · — años</div>
+          </div>
+          <div class="banco-box">
+            <div class="bl">Cuota Banco RD$</div>
+            <div class="bv" id="bv-rd">—</div>
+            <div class="bs">Equivalente en pesos dominicanos</div>
+          </div>
+          <div class="banco-box" style="flex:0.7">
+            <div class="bl">Tasa Anual (%)</div>
+            <div class="bv">
+              <input type="number" id="tasaBanco" value="14.6" step="0.1" min="1" max="50"
+                onchange="Plan.recalcular()" class="banco-input" style="width:80px">
+              <span style="font-size:14px;color:#64748b;font-weight:600">%</span>
+            </div>
+            <div class="bs">Tasa banco anual</div>
+          </div>
+          <div class="banco-box" style="flex:0.7">
+            <div class="bl">Plazo (años)</div>
+            <div class="bv">
+              <select id="anosBanco" onchange="Plan.recalcular()" class="banco-input" style="width:auto">
+                <option>10</option><option>15</option><option value="20" selected>20</option>
+                <option>25</option><option>30</option>
+              </select>
+            </div>
+            <div class="bs">Años de financiamiento</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRONOGRAMA -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="card-title" style="margin-bottom:0;border:none;padding-bottom:0">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            Cronograma de Pagos
+          </div>
+          <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-green" onclick="Plan.guardarHistorial()">💾 Guardar</button>
+            <button class="btn btn-outline" onclick="Plan.exportarMrhome()" style="background:var(--navy-deep);color:#fff;border-color:var(--navy-deep)">🏢 PDF Mrhome</button>
+            <button class="btn btn-celeste" onclick="Calendario.exportarPlanICS()">📅 Calendario</button>
+            <button class="btn btn-outline" onclick="window.print()">🖨️</button>
+          </div>
+        </div>
+
+        <div id="plan-header">
+          <div><div>Cliente</div><strong id="ph-cliente">—</strong></div>
+          <div><div>Proyecto</div><strong id="ph-proyecto">—</strong></div>
+          <div><div>Unidad</div><strong id="ph-unidad">—</strong></div>
+          <div><div>Precio</div><strong id="ph-precio">—</strong></div>
+          <div><div>Esquema</div><strong id="ph-esquema">—</strong></div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Fecha</th><th>Concepto</th>
+                <th>Cuota Base USD$</th><th>Extra USD$</th>
+                <th>Total Cuota USD$</th><th>Total en RD$</th>
+                <th>% Acum.</th><th>Saldo USD$</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-body">
+              <tr><td colspan="9" style="text-align:center;padding:28px;color:#94a3b8">
+                Complete los datos para generar el cronograma</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="height:20px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SCREEN: HISTORIAL
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="screen-historial" class="screen">
+    <div class="back-bar">
+      <button class="back-btn" onclick="App.showScreen('menu')">‹ Menú</button>
+      <h2>Historial</h2>
+      <div class="right-actions">
+        <button title="Recargar" onclick="Historial.render()" aria-label="Recargar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="hist-toolbar">
+        <input type="text" class="hist-search" id="hist-search" placeholder="Buscar por cliente, proyecto, unidad..." oninput="Historial.filter(this.value)">
+      </div>
+      <div id="hist-content"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SCREEN: CONFIG
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="screen-config" class="screen">
+    <div class="back-bar">
+      <button class="back-btn" onclick="App.showScreen('menu')">‹ Menú</button>
+      <h2>Configuración</h2>
+    </div>
+
+    <div class="container">
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Datos del Asesor
+        </div>
+        <div class="config-info">
+          Estos datos aparecen en los planes exportados y en los archivos de calendario que envíes a los clientes.
+        </div>
+        <div class="g2">
+          <div class="field"><label>Nombre del Asesor</label>
+            <input type="text" id="cfg-asesor-nombre" placeholder="Ej. Juan José Abreu" oninput="Config.save()">
+          </div>
+          <div class="field"><label>Partner / Equipo</label>
+            <input type="text" id="cfg-partner" placeholder="Ej. Víctor Andújar" oninput="Config.save()">
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>Teléfono / WhatsApp</label>
+            <input type="tel" id="cfg-telefono" placeholder="+1 809 000 0000" oninput="Config.save()">
+          </div>
+          <div class="field"><label>Email</label>
+            <input type="email" id="cfg-email" placeholder="asesor@mrhome.com.do" oninput="Config.save()">
+          </div>
+        </div>
+        <div class="field"><label>Empresa</label>
+          <input type="text" id="cfg-empresa" value="MR. Home Asesores Inmobiliarios" oninput="Config.save()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Datos y Privacidad
+        </div>
+        <div class="config-info">
+          <strong>Todo se guarda localmente en tu dispositivo.</strong><br>
+          Ningún dato sale de la app. Puedes exportar un respaldo para guardarlo en tu Drive o restaurar uno anterior.
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-celeste" onclick="Config.backup()">⬇️ Exportar Respaldo</button>
+          <button class="btn btn-outline" onclick="Config.restoreClick()">⬆️ Restaurar Respaldo</button>
+        </div>
+        <input type="file" id="restore-input" accept=".json,application/json" style="display:none" onchange="Config.restoreFile(event)">
+
+        <div class="config-danger">
+          <strong>⚠️ Zona peligrosa:</strong> Eliminar todos los datos borrará tu historial de planes y configuración. Esta acción no se puede deshacer.
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn btn-red btn-sm" onclick="Config.borrarTodo()">🗑️ Eliminar todos los datos</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Sobre J&V Tools
+        </div>
+        <div style="font-size:13px;color:#475569;line-height:1.6">
+          <strong style="color:var(--navy)">J&V Tools v1.0.0</strong><br>
+          PWA · Suite de herramientas para asesores inmobiliarios.<br>
+          <small style="color:var(--muted)">Funciona offline · Tus datos quedan en tu dispositivo</small>
+          <hr class="dash" style="margin:10px 0">
+          <div id="cfg-status" style="font-size:11.5px"></div>
+        </div>
+      </div>
+
+      <div style="height:20px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BOTTOM NAV
+       ═══════════════════════════════════════════════════════════════ -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item" id="nav-menu" onclick="App.showScreen('menu')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Menú
+    </button>
+    <button class="nav-item" id="nav-plan" onclick="App.showScreen('plan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      Plan
+    </button>
+    <button class="nav-item" id="nav-historial" onclick="App.showScreen('historial')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Historial
+    </button>
+    <button class="nav-item" id="nav-config" onclick="App.showScreen('config')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Config
+    </button>
+  </nav>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SCRIPTS  — loaded in order, all defer
+     ════════════════════════════════════════════════════════════════════ -->
+<script src="js/db.js" defer></script>
+<script src="js/config.js" defer></script>
+<script src="js/calendario.js" defer></script>
+<script src="js/historial.js" defer></script>
+<script src="js/plan.js" defer></script>
+<script src="js/app.js" defer></script>
+
+</body>
+</html>
