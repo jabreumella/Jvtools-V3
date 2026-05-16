@@ -55,6 +55,11 @@ const App = (() => {
       _planLoaded = true;
       try { Plan.init(); } catch (e) { console.error(e); }
     }
+    if (name === 'capacidad') {
+      try { Capacidad.init(); } catch (e) { console.error(e); }
+      // Forzar redraw de charts al entrar a la pantalla
+      setTimeout(() => { try { Capacidad.calcular(); } catch(e) {} }, 80);
+    }
     if (name === 'historial') {
       try { Historial.render(); } catch (e) { console.error(e); }
     }
