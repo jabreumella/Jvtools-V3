@@ -129,11 +129,10 @@
         <div class="tool-desc">Cronograma completo de cuotas</div>
       </button>
 
-      <button class="tool-card disabled" title="Próximamente">
+      <button class="tool-card" onclick="App.showScreen('capacidad')">
         <div class="tool-icon tc-green">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <span class="tool-badge">PRONTO</span>
         <div class="tool-name">Capacidad de Pago</div>
         <div class="tool-desc">Evaluación financiera del cliente</div>
       </button>
@@ -556,6 +555,292 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════
+       SCREEN: CAPACIDAD DE PAGO
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="screen-capacidad" class="screen">
+    <div class="back-bar">
+      <button class="back-btn" onclick="App.showScreen('menu')">‹ Menú</button>
+      <h2>Capacidad de Pago</h2>
+      <div class="right-actions">
+        <button class="bb-icon-btn" title="Recalcular" onclick="Capacidad.calcular()">⟳</button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Action bar -->
+      <div class="cap-action-bar no-print">
+        <span id="cap-saved-badge" class="cap-saved-badge">✓ Guardado automáticamente</span>
+        <button class="btn btn-ghost" onclick="Capacidad.clearForm()">🗑 Limpiar</button>
+        <button class="btn btn-gold" onclick="window.print()">🖨 Imprimir</button>
+      </div>
+
+      <!-- Datos del cliente -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Datos del Cliente
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Nombre del Cliente</label>
+            <input type="text" id="cap-nombre" placeholder="Ej. Juan Pérez" oninput="Capacidad.calcular()">
+          </div>
+          <div class="field">
+            <label>Nacionalidad</label>
+            <input type="text" id="cap-nacionalidad" placeholder="Ej. Dominicano" oninput="Capacidad.calcular()">
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Asesor</label>
+            <input type="text" id="cap-asesor" placeholder="Tu nombre" oninput="Capacidad.calcular()">
+          </div>
+          <div class="field">
+            <label>Fecha del Análisis</label>
+            <input type="date" id="cap-fecha" oninput="Capacidad.calcular()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Capacidad Financiera -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Capacidad Financiera
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Capital Disponible (USD$)</label>
+            <div class="pw"><span class="pfx">$</span>
+              <input type="text" id="cap-capital" inputmode="numeric" value="30,000" style="padding-left:26px"
+                onfocus="Capacidad.unFmt(this)" onblur="Capacidad.fmtField(this); Capacidad.calcular()" oninput="Capacidad.calcular()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Flujo Mensual (USD$)</label>
+            <div class="pw"><span class="pfx">$</span>
+              <input type="text" id="cap-flujo" inputmode="numeric" value="1,000" style="padding-left:26px"
+                onfocus="Capacidad.unFmt(this)" onblur="Capacidad.fmtField(this); Capacidad.calcular()" oninput="Capacidad.calcular()">
+            </div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Ingreso Extraordinario / Año (USD$)</label>
+            <div class="pw"><span class="pfx">$</span>
+              <input type="text" id="cap-extraordinario" inputmode="numeric" value="6,000" style="padding-left:26px"
+                onfocus="Capacidad.unFmt(this)" onblur="Capacidad.fmtField(this); Capacidad.calcular()" oninput="Capacidad.calcular()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Venta de Inmueble (USD$)</label>
+            <div class="pw"><span class="pfx">$</span>
+              <input type="text" id="cap-venta" inputmode="numeric" value="0" style="padding-left:26px"
+                onfocus="Capacidad.unFmt(this)" onblur="Capacidad.fmtField(this); Capacidad.calcular()" oninput="Capacidad.calcular()">
+            </div>
+            <div class="field-hint">Valor estimado de propiedad a liquidar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasa de cambio -->
+      <div class="card">
+        <div class="card-title">
+          💱 Tasa de Cambio — RD$ / USD$
+        </div>
+        <div class="cap-tasa-row">
+          <input type="range" id="cap-tasa-slider" min="55" max="80" value="61.4" step="0.1"
+            oninput="document.getElementById('cap-tasa').value=this.value; Capacidad.calcular();">
+          <div class="cap-tasa-input">
+            <input type="number" id="cap-tasa" value="61.4" min="55" max="80" step="0.1"
+              oninput="document.getElementById('cap-tasa-slider').value=this.value; Capacidad.calcular();">
+            <span>RD$ / USD$</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary strip oscura -->
+      <div class="cap-summary-strip">
+        <div class="cap-sum-client">
+          <h2 id="cap-sum-nombre">— Nombre del Cliente —</h2>
+          <p id="cap-sum-meta">Nacionalidad · Consulta: — · Asesor: —</p>
+        </div>
+        <div class="cap-sum-kpis">
+          <div class="cap-sum-kpi">
+            <div class="cap-sum-val" id="cap-sum-capital">$0</div>
+            <div class="cap-sum-lbl">Capital disponible</div>
+          </div>
+          <div class="cap-sum-kpi">
+            <div class="cap-sum-val" id="cap-sum-flujo">$0</div>
+            <div class="cap-sum-lbl">Flujo mensual</div>
+          </div>
+          <div class="cap-sum-kpi">
+            <div class="cap-sum-val" id="cap-sum-max">$0</div>
+            <div class="cap-sum-lbl">Cap. máx. (48m / 30%)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acumulado por período -->
+      <div class="card">
+        <div class="card-title">📊 Acumulado por Período</div>
+        <div class="cap-metrics">
+          <div class="cap-metric m12">
+            <div class="cap-m-period">12 meses</div>
+            <div class="cap-m-amount" id="cap-ac-12">$0</div>
+            <div class="cap-m-year" id="cap-yr-12">—</div>
+          </div>
+          <div class="cap-metric m24">
+            <div class="cap-m-period">24 meses</div>
+            <div class="cap-m-amount" id="cap-ac-24">$0</div>
+            <div class="cap-m-year" id="cap-yr-24">—</div>
+          </div>
+          <div class="cap-metric m36">
+            <div class="cap-m-period">36 meses</div>
+            <div class="cap-m-amount" id="cap-ac-36">$0</div>
+            <div class="cap-m-year" id="cap-yr-36">—</div>
+          </div>
+          <div class="cap-metric m48">
+            <div class="cap-m-period">48 meses</div>
+            <div class="cap-m-amount" id="cap-ac-48">$0</div>
+            <div class="cap-m-year" id="cap-yr-48">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla capacidad de compra -->
+      <div class="card">
+        <div class="card-title">🏠 Capacidad de Compra (USD$)</div>
+        <p class="field-hint" style="margin-bottom:10px">👆 Toca cualquier monto para ver la Cuota Estimada</p>
+        <div class="table-wrap">
+          <table class="cap-table">
+            <thead>
+              <tr>
+                <th>Esquema</th><th>12 m</th><th>24 m</th><th>36 m</th><th>48 m</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="cap-pill p50">Al 50%</span></td>
+                <td class="clickable" data-meses="12" data-pct="0.5" data-label="Al 50%" onclick="Capacidad.cellClick(this)" id="cap-t50-12">—</td>
+                <td class="clickable" data-meses="24" data-pct="0.5" data-label="Al 50%" onclick="Capacidad.cellClick(this)" id="cap-t50-24">—</td>
+                <td class="clickable" data-meses="36" data-pct="0.5" data-label="Al 50%" onclick="Capacidad.cellClick(this)" id="cap-t50-36">—</td>
+                <td class="clickable" data-meses="48" data-pct="0.5" data-label="Al 50%" onclick="Capacidad.cellClick(this)" id="cap-t50-48">—</td>
+              </tr>
+              <tr>
+                <td><span class="cap-pill p40">Al 40%</span></td>
+                <td class="clickable" data-meses="12" data-pct="0.4" data-label="Al 40%" onclick="Capacidad.cellClick(this)" id="cap-t40-12">—</td>
+                <td class="clickable" data-meses="24" data-pct="0.4" data-label="Al 40%" onclick="Capacidad.cellClick(this)" id="cap-t40-24">—</td>
+                <td class="clickable" data-meses="36" data-pct="0.4" data-label="Al 40%" onclick="Capacidad.cellClick(this)" id="cap-t40-36">—</td>
+                <td class="clickable" data-meses="48" data-pct="0.4" data-label="Al 40%" onclick="Capacidad.cellClick(this)" id="cap-t40-48">—</td>
+              </tr>
+              <tr>
+                <td><span class="cap-pill p30">Al 30%</span></td>
+                <td class="clickable" data-meses="12" data-pct="0.3" data-label="Al 30%" onclick="Capacidad.cellClick(this)" id="cap-t30-12">—</td>
+                <td class="clickable" data-meses="24" data-pct="0.3" data-label="Al 30%" onclick="Capacidad.cellClick(this)" id="cap-t30-24">—</td>
+                <td class="clickable" data-meses="36" data-pct="0.3" data-label="Al 30%" onclick="Capacidad.cellClick(this)" id="cap-t30-36">—</td>
+                <td class="clickable" data-meses="48" data-pct="0.3" data-label="Al 30%" onclick="Capacidad.cellClick(this)" id="cap-t30-48">—</td>
+              </tr>
+              <tr class="cap-row-accum">
+                <td>Acumulado</td>
+                <td id="cap-ta-12">—</td><td id="cap-ta-24">—</td><td id="cap-ta-36">—</td><td id="cap-ta-48">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-hint" style="margin-top:10px">✱ Capacidad = Acumulado ÷ % de enganche</div>
+      </div>
+
+      <!-- Cuota estimada panel -->
+      <div id="cap-cuota-panel" class="cap-cuota-panel">
+        <div class="cap-cq-header">
+          <div>
+            <div class="cap-cq-title">📋 Cuota Estimada durante el Plan de Pago</div>
+            <div class="cap-cq-sub" id="cap-cq-scenario">Selecciona un escenario en la tabla de arriba</div>
+          </div>
+          <button class="cap-cq-close" onclick="Capacidad.hideCuota()" title="Cerrar">✕</button>
+        </div>
+        <div class="cap-cq-grid">
+          <div class="cap-cq-item">
+            <div class="cap-cq-lbl">Valor de la Propiedad</div>
+            <div class="cap-cq-val" id="cap-cq-propiedad">—</div>
+            <div class="cap-cq-rd"  id="cap-cq-propiedad-rd">—</div>
+          </div>
+          <div class="cap-cq-item">
+            <div class="cap-cq-lbl">Reserva 10%</div>
+            <div class="cap-cq-val" id="cap-cq-reserva">—</div>
+            <div class="cap-cq-rd"  id="cap-cq-reserva-rd">—</div>
+          </div>
+          <div class="cap-cq-item">
+            <div class="cap-cq-lbl" id="cap-cq-enganche-lbl">Plan de Pago —</div>
+            <div class="cap-cq-val" id="cap-cq-enganche">—</div>
+            <div class="cap-cq-rd"  id="cap-cq-enganche-rd">—</div>
+          </div>
+          <div class="cap-cq-item">
+            <div class="cap-cq-lbl">Contra Entrega</div>
+            <div class="cap-cq-val" id="cap-cq-plan">—</div>
+            <div class="cap-cq-rd"  id="cap-cq-plan-rd">—</div>
+          </div>
+        </div>
+        <div class="cap-cq-result">
+          <div class="cap-cq-r-label">Cuota Mensual Estimada durante la construcción</div>
+          <div class="cap-cq-r-usd" id="cap-cq-cuota-usd">$0</div>
+          <div class="cap-cq-r-rd"  id="cap-cq-cuota-rd">RD$ 0</div>
+          <div class="cap-cq-r-note" id="cap-cq-nota">— / mes · Período: — meses</div>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div class="card">
+        <div class="card-title">📈 Rango de Propiedades Alcanzables</div>
+        <div class="chart-wrap" style="height:260px"><canvas id="cap-chart-capacidad"></canvas></div>
+      </div>
+
+      <!-- Line chart -->
+      <div class="card">
+        <div class="card-title">📉 Proyección de Acumulación</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="cap-chart-acumulado"></canvas></div>
+      </div>
+
+      <!-- Tabla RD$ -->
+      <div class="card">
+        <div class="card-title">🇩🇴 Equivalencia en Pesos Dominicanos (RD$)</div>
+        <div class="table-wrap">
+          <table class="cap-table">
+            <thead>
+              <tr>
+                <th>Esquema</th><th>12 m</th><th>24 m</th><th>36 m</th><th>48 m</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="cap-pill p50">Al 50%</span></td>
+                <td id="cap-r50-12">—</td><td id="cap-r50-24">—</td><td id="cap-r50-36">—</td><td id="cap-r50-48">—</td>
+              </tr>
+              <tr>
+                <td><span class="cap-pill p40">Al 40%</span></td>
+                <td id="cap-r40-12">—</td><td id="cap-r40-24">—</td><td id="cap-r40-36">—</td><td id="cap-r40-48">—</td>
+              </tr>
+              <tr>
+                <td><span class="cap-pill p30">Al 30%</span></td>
+                <td id="cap-r30-12">—</td><td id="cap-r30-24">—</td><td id="cap-r30-36">—</td><td id="cap-r30-48">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-hint" style="margin-top:10px">✱ Calculado con la tasa de cambio indicada arriba · Solo referencial</div>
+      </div>
+
+      <p class="cap-footnote">
+        Herramienta de uso referencial. Los valores son estimaciones basadas en los datos ingresados y no constituyen oferta ni garantía de financiamiento.
+      </p>
+
+      <div style="height:30px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
        SCREEN: HISTORIAL
        ═══════════════════════════════════════════════════════════════ -->
   <div id="screen-historial" class="screen">
@@ -690,6 +975,7 @@
 <script src="js/calendario.js" defer></script>
 <script src="js/historial.js" defer></script>
 <script src="js/plan.js" defer></script>
+<script src="js/capacidad.js" defer></script>
 <script src="js/app.js" defer></script>
 
 </body>

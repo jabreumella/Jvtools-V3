@@ -7,7 +7,7 @@
  *  Al activar: limpia caches viejos y notifica al cliente si hay update.
  * ──────────────────────────────────────────────────────────────────────── */
 
-const CACHE_VERSION = 'jvtools-v1.0.2';
+const CACHE_VERSION = 'jvtools-v1.0.3';
 const CACHE_STATIC  = `${CACHE_VERSION}-static`;
 const CACHE_RUNTIME = `${CACHE_VERSION}-runtime`;
 
@@ -21,6 +21,7 @@ const PRECACHE_URLS = [
   './js/app.js',
   './js/db.js',
   './js/plan.js',
+  './js/capacidad.js',
   './js/historial.js',
   './js/calendario.js',
   './js/config.js',
