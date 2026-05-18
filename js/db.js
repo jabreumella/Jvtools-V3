@@ -91,23 +91,36 @@ const DB = (() => {
   }
 
   // ── Stats agregadas para el dashboard del menú ──────────────────────
-  // Retorna { total, mes, volumenUSD } a partir de los planes guardados
+  // Retorna { total, mes, volumenUSD, planesTotal, prestamosTotal }
+  // volumenUSD suma sólo planes (cotizaciones de venta), excluyendo préstamos
   async function getStats() {
     try {
       const all = await getAllPlans();
       const now = new Date();
       const y = now.getFullYear();
       const m = now.getMonth();
-      let mes = 0, vol = 0;
+      let mes = 0, vol = 0, planesT = 0, prestamosT = 0;
       all.forEach(p => {
         const d = new Date(p.createdAt || 0);
         if (d.getFullYear() === y && d.getMonth() === m) mes++;
-        const precio = parseFloat(String(p.precioUSD || '0').replace(/,/g, '')) || 0;
-        vol += precio;
+        const esPrestamo = p.tipo === 'prestamo';
+        if (esPrestamo) prestamosT++;
+        else            planesT++;
+        // Volumen: sólo planes de pago (cotizaciones de venta)
+        if (!esPrestamo) {
+          const precio = parseFloat(String(p.precioUSD || '0').replace(/,/g, '')) || 0;
+          vol += precio;
+        }
       });
-      return { total: all.length, mes, volumenUSD: vol };
+      return {
+        total: all.length,
+        mes,
+        volumenUSD: vol,
+        planesTotal: planesT,
+        prestamosTotal: prestamosT
+      };
     } catch (e) {
-      return { total: 0, mes: 0, volumenUSD: 0 };
+      return { total: 0, mes: 0, volumenUSD: 0, planesTotal: 0, prestamosTotal: 0 };
     }
   }
 

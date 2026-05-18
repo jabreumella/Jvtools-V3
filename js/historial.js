@@ -81,13 +81,19 @@ const Historial = (() => {
   }
 
   function planCard(p) {
+    const esPrestamo = p.tipo === 'prestamo';
+    if (esPrestamo) return prestamoCard(p);
+
     const precio = parseFloat(String(p.precioUSD || '0').replace(/,/g, '')) || 0;
     const esquema = `${parseFloat(p.pctInicial)||0}-${parseFloat(p.pctPlan)||0}-${parseFloat(p.pctEntrega)||0}`;
     return `
       <div class="hist-card">
         <div class="hist-icon">${escapeHTML(firstLetter(p.cliente))}</div>
         <div class="hist-body">
-          <div class="hist-cliente">${escapeHTML(p.cliente || 'Sin cliente')}</div>
+          <div class="hist-cliente">
+            ${escapeHTML(p.cliente || 'Sin cliente')}
+            <span class="hist-type-badge hist-type-plan">PLAN</span>
+          </div>
           <div class="hist-proyecto">${escapeHTML(p.proyecto || '—')}${p.unidad ? ' · ' + escapeHTML(p.unidad) : ''}</div>
           <div class="hist-meta">
             <span class="meta-pill">💰 ${fmtUSD(precio)}</span>
@@ -104,17 +110,68 @@ const Historial = (() => {
       </div>`;
   }
 
+  function prestamoCard(p) {
+    const valor = parseFloat(String(p.precioUSD || '0').replace(/,/g, '')) || 0;
+    const cuota = parseFloat(p.cuotaUSD || 0);
+    const cuotaTxt = '$' + Math.round(cuota).toLocaleString('en-US');
+    const banco = p.banco || 'Banco';
+    const tasaPlazo = `${(p.tasa||0).toFixed(2)}% · ${p.plazo||0}a`;
+    const pctFin = p.pctFinanciar || 0;
+    return `
+      <div class="hist-card hist-card-prestamo">
+        <div class="hist-icon hist-icon-prestamo">${escapeHTML(firstLetter(p.cliente))}</div>
+        <div class="hist-body">
+          <div class="hist-cliente">
+            ${escapeHTML(p.cliente || 'Sin cliente')}
+            <span class="hist-type-badge hist-type-prestamo">PRÉSTAMO</span>
+          </div>
+          <div class="hist-proyecto">${escapeHTML(p.proyecto || '—')}${p.unidad ? ' · ' + escapeHTML(p.unidad) : ''}</div>
+          <div class="hist-meta">
+            <span class="meta-pill">🏠 ${fmtUSD(valor)}</span>
+            <span class="meta-pill">🏦 ${escapeHTML(banco)}</span>
+            <span class="meta-pill">📊 ${pctFin}% · ${tasaPlazo}</span>
+            <span class="meta-pill" style="background:#fef3c7;color:#92400e">💵 ${cuotaTxt}/mes</span>
+            <span class="meta-pill" style="background:#f0f9ff;color:#0369a1">${fmtFecha(p.createdAt)}</span>
+          </div>
+        </div>
+        <div class="hist-actions">
+          <button title="Abrir" onclick="Historial.load(${p.id})">📂</button>
+          <button title="Eliminar" class="delete" onclick="Historial.del(${p.id})">🗑️</button>
+        </div>
+      </div>`;
+  }
+
   // ── ACTIONS ──────────────────────────────────────────────────────────
   async function load(id) {
     try {
-      const plan = await DB.getPlan(Number(id));
-      if (!plan) { App.toast('Plan no encontrado', 'error'); return; }
+      const item = await DB.getPlan(Number(id));
+      if (!item) { App.toast('Registro no encontrado', 'error'); return; }
+
+      if (item.tipo === 'prestamo') {
+        // Cargar préstamo
+        App.showScreen('prestamo');
+        setTimeout(() => {
+          try {
+            if (item.snapshot) {
+              localStorage.setItem('jvtools.prestamo.v1', JSON.stringify(item.snapshot));
+            }
+            Prestamo.init();    // si no estaba inicializado, lo hace
+            Prestamo.reload();  // recarga forzada desde localStorage
+            App.toast(`Préstamo cargado: ${item.cliente || 'sin nombre'}`, 'success');
+          } catch (e) {
+            console.error(e);
+            App.toast('Error al cargar préstamo', 'error');
+          }
+        }, 80);
+        return;
+      }
+
+      // Plan de pago tradicional
       App.showScreen('plan');
-      // Pequeño delay para asegurar que la pantalla se montó
       setTimeout(() => {
         try {
-          Plan.cargarDesdeHistorial(plan);
-          App.toast(`Plan cargado: ${plan.cliente || 'sin nombre'}`, 'success');
+          Plan.cargarDesdeHistorial(item);
+          App.toast(`Plan cargado: ${item.cliente || 'sin nombre'}`, 'success');
         } catch (e) {
           console.error(e);
           App.toast('Error al cargar plan', 'error');
@@ -122,7 +179,7 @@ const Historial = (() => {
       }, 60);
     } catch (e) {
       console.error(e);
-      App.toast('Error al cargar plan', 'error');
+      App.toast('Error al cargar', 'error');
     }
   }
 

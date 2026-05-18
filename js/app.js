@@ -60,11 +60,20 @@ const App = (() => {
       // Forzar redraw de charts al entrar a la pantalla
       setTimeout(() => { try { Capacidad.calcular(); } catch(e) {} }, 80);
     }
+    if (name === 'prestamo') {
+      try { Prestamo.init(); } catch (e) { console.error(e); }
+      // Recalcular al entrar a la pantalla (necesario para el canvas)
+      setTimeout(() => { try { Prestamo.calcular(); } catch(e) {} }, 80);
+    }
     if (name === 'historial') {
       try { Historial.render(); } catch (e) { console.error(e); }
     }
     if (name === 'config') {
-      try { Config.populateForm(); Config.updateStatus(); } catch (e) { console.error(e); }
+      try {
+        Config.populateForm();
+        Config.updateStatus();
+        if (typeof Finance !== 'undefined') Finance.populateConfigForm();
+      } catch (e) { console.error(e); }
     }
     if (name === 'menu') {
       try { Config.updateGreeting(); } catch (e) { /* ignore */ }
@@ -225,6 +234,10 @@ const App = (() => {
   function boot() {
     // 1. Config primero (necesario para greeting, asesor data, etc.)
     try { Config.init(); } catch (e) { console.error('Config init:', e); }
+
+    // 1b. Finance (parámetros financieros editables)
+    try { if (typeof Finance !== 'undefined') Finance.init(); }
+    catch (e) { console.error('Finance init:', e); }
 
     // 2. Setup install prompt + SW
     setupInstallPrompt();

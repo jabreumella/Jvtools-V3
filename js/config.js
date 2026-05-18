@@ -163,9 +163,10 @@ const Config = (() => {
       const dbData = await DB.exportAll();
       const payload = {
         app:       'jv-tools',
-        version:   '1.0.0',
+        version:   '1.0.5',
         exported:  new Date().toISOString(),
         config:    load(),
+        finance:   (typeof Finance !== 'undefined') ? Finance.get() : null,
         ...dbData
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -207,8 +208,18 @@ const Config = (() => {
         onConfirm: async () => {
           try {
             if (data.config) set(data.config);
+            // Restaurar parámetros financieros si vienen en el respaldo
+            if (data.finance && typeof Finance !== 'undefined') {
+              try {
+                localStorage.setItem('APP_FINANCE', JSON.stringify(data.finance));
+                // Forzar recarga del cache de Finance
+                Finance.init();
+                if (typeof Prestamo !== 'undefined') Prestamo.poblarBancos();
+              } catch (e) { console.error('Restore finance:', e); }
+            }
             await DB.importAll(data, { merge: false });
             populateForm();
+            if (typeof Finance !== 'undefined') Finance.populateConfigForm();
             App.toast('Respaldo restaurado', 'success');
           } catch (e) {
             console.error(e);
