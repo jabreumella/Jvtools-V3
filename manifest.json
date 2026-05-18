@@ -32,6 +32,13 @@
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {
+      "name": "Préstamo Hipotecario",
+      "short_name": "Préstamo",
+      "description": "Calcular cuota hipotecaria",
+      "url": "./index.html?screen=prestamo",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
       "name": "Historial",
       "short_name": "Historial",
       "description": "Ver cotizaciones guardadas",
