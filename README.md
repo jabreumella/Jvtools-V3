@@ -1,6 +1,6 @@
 # J&V Tools — PWA Inmobiliaria
 
-**MR. Home Asesores Inmobiliarios · República Dominicana**
+**· República Dominicana**
 Juan José Abreu · Víctor Andújar
 
 PWA modular instalable que reemplaza el monolito HTML de 2,693 líneas. Funciona offline, persiste cotizaciones en IndexedDB, exporta planes a PDF Mrhome y a `.ics` para Google Calendar.
